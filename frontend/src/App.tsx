@@ -8,6 +8,9 @@ export default function App() {
         <p className="mt-4 text-cyan-400 font-medium text-lg">
           basurang lee sunod ko na sau mamaya or bukas
         </p>
+        <p className="mt-2 text-zinc-400 text-sm">
+          <span className="text-cyan-400">naka</span> set up na react 18 ko pokeng ena mo
+        </p>
       </div>
     </div>
   )
