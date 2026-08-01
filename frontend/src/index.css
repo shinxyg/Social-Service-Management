@@ -1,13 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
-/* -----------------------------------------------------------------------
-   Tailwind v4 theme — CSS-first config. Every --color-*, --font-*,
-   --radius-*, --shadow-* variable here automatically generates the
-   matching utility classes (bg-primary, text-foreground, font-heading,
-   rounded-2xl, shadow-soft, etc). This replaces tailwind.config.js,
-   which Tailwind v4 does not read unless explicitly linked via @config.
-   ----------------------------------------------------------------------- */
 @theme {
   --color-background: hsl(220 25% 98%);
   --color-foreground: hsl(222 47% 11%);

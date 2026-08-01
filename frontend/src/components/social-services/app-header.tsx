@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react"
 import { useLocation } from "react-router-dom"
 import { Search, HelpCircle, Bell, Menu, User, Settings, LogOut, Sun, Moon } from "lucide-react"
 import { moduleRoutes } from "./routes"
+import { Tooltip } from "./tooltip"
 
 export function AppHeader({
   onToggleSidebar,
@@ -30,13 +31,15 @@ export function AppHeader({
   return (
     <header className="h-16 sticky top-0 z-40 flex items-center justify-between gap-4 px-4 md:px-6 border-b border-border bg-card/80 backdrop-blur-sm">
       <div className="flex items-center gap-3 min-w-0">
-        <button
-          aria-label="Toggle sidebar"
-          onClick={onToggleSidebar}
-          className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <Tooltip label="Toggle sidebar">
+          <button
+            aria-label="Toggle sidebar"
+            onClick={onToggleSidebar}
+            className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </Tooltip>
         <p className="text-sm font-medium text-foreground truncate">
           {current?.label ?? "Social Services Management"}
         </p>
@@ -52,28 +55,34 @@ export function AppHeader({
           />
         </div>
 
-        <button
-          aria-label="Toggle theme"
-          onClick={onToggleDark}
-          className="h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </button>
+        <Tooltip label={dark ? "Switch to light mode" : "Switch to dark mode"}>
+          <button
+            aria-label="Toggle theme"
+            onClick={onToggleDark}
+            className="h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+        </Tooltip>
 
-        <button
-          aria-label="Help"
-          className="h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <HelpCircle className="h-5 w-5" />
-        </button>
+        <Tooltip label="Help & guides">
+          <button
+            aria-label="Help"
+            className="h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </button>
+        </Tooltip>
 
-        <button
-          aria-label="Notifications"
-          className="relative h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive" />
-        </button>
+        <Tooltip label="Notifications">
+          <button
+            aria-label="Notifications"
+            className="relative h-10 w-10 rounded-xl flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-destructive" />
+          </button>
+        </Tooltip>
 
         {/* User menu with dropdown */}
         <div className="relative" ref={menuRef}>

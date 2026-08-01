@@ -1,13 +1,14 @@
-
 import { useState, type ReactNode } from "react"
-import { ArrowLeft, ArrowRight, Check, FileCheck2, ClipboardList, UserCheck, Wallet } from "lucide-react"
-
-const assistanceTypes = [
-  "Medical assistance",
-  "Burial assistance",
-  "Educational assistance",
-  "Transportation assistance",
-]
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  FileCheck2,
+  MessageCircle,
+  UserCheck,
+  ThumbsUp,
+  Wallet,
+} from "lucide-react"
 
 const requirementsByType: Record<string, string[]> = {
   "Medical assistance": [
@@ -35,11 +36,15 @@ const requirementsByType: Record<string, string[]> = {
   ],
 }
 
+// Admin/staff process flow only. Application intake now happens on the
+// resident-facing portal (user-portal/apply-aics.tsx) — staff always start
+// here from an already-submitted case, at Verification.
 const steps = [
-  { label: "Intake", icon: ClipboardList },
-  { label: "Requirements", icon: FileCheck2 },
+  { label: "Verification", icon: FileCheck2 },
+  { label: "Interview", icon: MessageCircle },
   { label: "Assessment", icon: UserCheck },
-  { label: "Approval & Release", icon: Wallet },
+  { label: "Approval", icon: ThumbsUp },
+  { label: "Release Assistance", icon: Wallet },
 ]
 
 export type AICSApplicationResult = {
@@ -49,47 +54,61 @@ export type AICSApplicationResult = {
   status: string
 }
 
+// Info submitted by the resident online. Required — the admin wizard only
+// ever processes an existing submission, it never creates one from scratch.
+export type AICSApplicantInfo = {
+  name: string
+  address: string
+  contact: string
+  type: string
+  narrative: string
+}
+
 export function AICSApplicationWizard({
   onCancel,
   onSubmit,
+  applicant,
 }: {
   onCancel: () => void
   onSubmit: (result: AICSApplicationResult) => void
+  applicant: AICSApplicantInfo
 }) {
   const [step, setStep] = useState(0)
   const [submitted, setSubmitted] = useState(false)
 
-  // Step 1 — Intake
-  const [name, setName] = useState("")
-  const [address, setAddress] = useState("")
-  const [contact, setContact] = useState("")
-  const [type, setType] = useState(assistanceTypes[0])
-  const [narrative, setNarrative] = useState("")
+  const { name, type, address, contact, narrative } = applicant
 
-  // Step 2 — Requirements
+  // Step 1 — Verification (Supporting Documents input)
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({})
 
-  // Step 3 — Assessment
+  // Step 2 — Interview
   const [interviewDate, setInterviewDate] = useState("")
+  const [interviewNotes, setInterviewNotes] = useState("")
+
+  // Step 3 — Assessment
   const [assessmentNotes, setAssessmentNotes] = useState("")
   const [recommendedAmount, setRecommendedAmount] = useState("")
   const [eligible, setEligible] = useState<"eligible" | "not-eligible">("eligible")
 
-  // Step 4 — Approval & Release
+  // Step 4 — Approval (output: Assistance Approval)
   const [officer, setOfficer] = useState("")
   const [approvalStatus, setApprovalStatus] = useState<"Approved" | "Disapproved">("Approved")
+
+  // Step 5 — Release Assistance (output: Financial Aid Record)
   const [releaseAmount, setReleaseAmount] = useState("")
   const [releaseDate, setReleaseDate] = useState("")
   const [remarks, setRemarks] = useState("")
 
   const requirements = requirementsByType[type] ?? []
   const allChecked = requirements.length > 0 && requirements.every((r) => checkedDocs[r])
+  const isApproved = approvalStatus === "Approved"
 
   const canProceed = () => {
-    if (step === 0) return name.trim() && address.trim() && narrative.trim()
-    if (step === 1) return allChecked
-    if (step === 2) return interviewDate && assessmentNotes.trim() && recommendedAmount
-    if (step === 3) return officer.trim() && releaseAmount && (approvalStatus === "Disapproved" || releaseDate)
+    if (step === 0) return allChecked
+    if (step === 1) return interviewDate && interviewNotes.trim()
+    if (step === 2) return assessmentNotes.trim() && recommendedAmount
+    if (step === 3) return officer.trim()
+    if (step === 4) return !isApproved || (releaseAmount && releaseDate)
     return true
   }
 
@@ -102,9 +121,17 @@ export function AICSApplicationWizard({
     onSubmit({
       name,
       type,
-      amount: `₱${Number(releaseAmount || 0).toLocaleString()}`,
-      status: approvalStatus === "Approved" ? "Released" : "Pending",
+      amount: `₱${Number((isApproved ? releaseAmount : 0) || 0).toLocaleString()}`,
+      status: isApproved ? "Released" : "Disapproved",
     })
+  }
+
+  const handleBack = () => {
+    if (step === 0) {
+      onCancel()
+      return
+    }
+    setStep(step - 1)
   }
 
   if (submitted) {
@@ -113,10 +140,10 @@ export function AICSApplicationWizard({
         <div className="h-14 w-14 rounded-2xl bg-success/10 flex items-center justify-center">
           <Check className="h-7 w-7 text-success" />
         </div>
-        <h2 className="text-lg font-heading font-semibold text-foreground">Application recorded</h2>
+        <h2 className="text-lg font-heading font-semibold text-foreground">Application processed</h2>
         <p className="text-sm text-muted-foreground max-w-sm">
-          {name || "The applicant"}'s {type.toLowerCase()} request has been logged with status "
-          {approvalStatus === "Approved" ? "Released" : "Pending"}".
+          {name}'s {type.toLowerCase()} request has been logged with status "
+          {isApproved ? "Released" : "Disapproved"}".
         </p>
         <button
           onClick={onCancel}
@@ -131,8 +158,8 @@ export function AICSApplicationWizard({
   return (
     <div className="space-y-6">
       {/* Stepper header */}
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-soft">
-        <div className="flex items-center">
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-soft overflow-x-auto">
+        <div className="flex items-center min-w-150">
           {steps.map((s, i) => {
             const Icon = s.icon
             const isActive = i === step
@@ -151,7 +178,7 @@ export function AICSApplicationWizard({
                   >
                     {isDone ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                   </div>
-                  <span className={`text-xs font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                  <span className={`text-xs font-medium whitespace-nowrap ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
                     {s.label}
                   </span>
                 </div>
@@ -168,45 +195,20 @@ export function AICSApplicationWizard({
         </div>
       </div>
 
+      {/* Applicant summary — read-only, submitted online by the resident */}
+      <div className="bg-muted/50 border border-border rounded-2xl p-4 text-sm">
+        <p className="text-xs font-medium text-muted-foreground mb-1">Applicant (submitted online)</p>
+        <p className="text-foreground font-medium">{name} — {type}</p>
+        <p className="text-muted-foreground text-xs mt-1">{address} · {contact}</p>
+        <p className="text-muted-foreground text-xs mt-2">{narrative}</p>
+      </div>
+
       {/* Step content */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-soft">
         {step === 0 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Client & case intake</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Full name">
-                <input value={name} onChange={(e) => setName(e.target.value)} className={`${inputCls} h-10`} placeholder="Juan D. Dela Cruz" />
-              </Field>
-              <Field label="Contact number">
-                <input value={contact} onChange={(e) => setContact(e.target.value)} className={`${inputCls} h-10`} placeholder="09XX XXX XXXX" />
-              </Field>
-              <Field label="Address" full>
-                <input value={address} onChange={(e) => setAddress(e.target.value)} className={`${inputCls} h-10`} placeholder="Barangay, City" />
-              </Field>
-              <Field label="Type of assistance" full>
-                <select value={type} onChange={(e) => setType(e.target.value)} className={`${inputCls} h-10`}>
-                  {assistanceTypes.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Situation / reason for request" full>
-                <textarea
-                  value={narrative}
-                  onChange={(e) => setNarrative(e.target.value)}
-                  rows={3}
-                  className={inputCls}
-                  placeholder="Brief description of the crisis situation..."
-                />
-              </Field>
-            </div>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Requirements checklist — {type}</h2>
-            <p className="text-xs text-muted-foreground">Check each document as it is received and verified from the applicant.</p>
+            <h2 className="text-sm font-semibold text-foreground">Verification — {type}</h2>
+            <p className="text-xs text-muted-foreground">Check each supporting document as it is received and verified from the applicant.</p>
             <div className="space-y-2">
               {requirements.map((r) => (
                 <label
@@ -226,13 +228,30 @@ export function AICSApplicationWizard({
           </div>
         )}
 
-        {step === 2 && (
+        {step === 1 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Social worker assessment</h2>
+            <h2 className="text-sm font-semibold text-foreground">Interview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Interview date">
                 <input type="date" value={interviewDate} onChange={(e) => setInterviewDate(e.target.value)} className={`${inputCls} h-10`} />
               </Field>
+              <Field label="Interview notes" full>
+                <textarea
+                  value={interviewNotes}
+                  onChange={(e) => setInterviewNotes(e.target.value)}
+                  rows={3}
+                  className={inputCls}
+                  placeholder="Summary of what the applicant shared during the interview..."
+                />
+              </Field>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Social worker assessment</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Recommended amount (₱)">
                 <input
                   type="number"
@@ -242,20 +261,20 @@ export function AICSApplicationWizard({
                   placeholder="0.00"
                 />
               </Field>
+              <Field label="Eligibility">
+                <div className="flex gap-3">
+                  <RadioPill label="Eligible" value="eligible" current={eligible} onChange={setEligible} />
+                  <RadioPill label="Not eligible" value="not-eligible" current={eligible} onChange={setEligible} />
+                </div>
+              </Field>
               <Field label="Assessment notes" full>
                 <textarea
                   value={assessmentNotes}
                   onChange={(e) => setAssessmentNotes(e.target.value)}
                   rows={3}
                   className={inputCls}
-                  placeholder="Findings from the interview and home/case validation..."
+                  placeholder="Findings from home/case validation and overall recommendation..."
                 />
-              </Field>
-              <Field label="Eligibility" full>
-                <div className="flex gap-3">
-                  <RadioPill label="Eligible" value="eligible" current={eligible} onChange={setEligible} />
-                  <RadioPill label="Not eligible" value="not-eligible" current={eligible} onChange={setEligible} />
-                </div>
               </Field>
             </div>
           </div>
@@ -263,7 +282,7 @@ export function AICSApplicationWizard({
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-foreground">Approval & release</h2>
+            <h2 className="text-sm font-semibold text-foreground">Approval</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Approving officer">
                 <input value={officer} onChange={(e) => setOfficer(e.target.value)} className={`${inputCls} h-10`} placeholder="Name of social welfare officer" />
@@ -274,28 +293,41 @@ export function AICSApplicationWizard({
                   <RadioPill label="Disapproved" value="Disapproved" current={approvalStatus} onChange={setApprovalStatus} />
                 </div>
               </Field>
-              <Field label="Release amount (₱)">
-                <input
-                  type="number"
-                  value={releaseAmount}
-                  onChange={(e) => setReleaseAmount(e.target.value)}
-                  className={`${inputCls} h-10`}
-                  placeholder="0.00"
-                />
-              </Field>
-              <Field label="Release date">
-                <input
-                  type="date"
-                  value={releaseDate}
-                  onChange={(e) => setReleaseDate(e.target.value)}
-                  className={`${inputCls} h-10`}
-                  disabled={approvalStatus === "Disapproved"}
-                />
-              </Field>
-              <Field label="Remarks" full>
-                <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={2} className={inputCls} placeholder="Optional remarks..." />
-              </Field>
             </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-semibold text-foreground">Release assistance</h2>
+            {!isApproved ? (
+              <p className="text-sm text-muted-foreground bg-muted rounded-xl px-4 py-3">
+                This application was disapproved at the Approval step — no assistance will be released. You may add a remark below before submitting.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Release amount (₱)">
+                  <input
+                    type="number"
+                    value={releaseAmount}
+                    onChange={(e) => setReleaseAmount(e.target.value)}
+                    className={`${inputCls} h-10`}
+                    placeholder="0.00"
+                  />
+                </Field>
+                <Field label="Release date">
+                  <input
+                    type="date"
+                    value={releaseDate}
+                    onChange={(e) => setReleaseDate(e.target.value)}
+                    className={`${inputCls} h-10`}
+                  />
+                </Field>
+              </div>
+            )}
+            <Field label="Remarks" full>
+              <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={2} className={inputCls} placeholder="Optional remarks..." />
+            </Field>
           </div>
         )}
       </div>
@@ -303,7 +335,7 @@ export function AICSApplicationWizard({
       {/* Nav buttons */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => (step === 0 ? onCancel() : setStep(step - 1))}
+          onClick={handleBack}
           className="h-10 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
         >
           <ArrowLeft className="h-4 w-4" />

@@ -1,4 +1,3 @@
-
 export function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-card border border-border rounded-2xl p-4 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-medium">
@@ -14,6 +13,7 @@ const statusColors: Record<string, string> = {
   Pending: "bg-warning/10 text-warning",
   Approved: "bg-info/10 text-info",
   Released: "bg-success/10 text-success",
+  Disapproved: "bg-destructive/10 text-destructive",
   "For interview": "bg-muted text-muted-foreground",
   "For assessment": "bg-info/10 text-info",
   "Ready for release": "bg-success/10 text-success",
@@ -60,4 +60,3 @@ export function PageHeader({ title, desc }: { title: string; desc: string }) {
     </div>
   )
 }
-
