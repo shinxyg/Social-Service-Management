@@ -1,35 +1,28 @@
 import { useState } from "react"
 import { Check, ClipboardList } from "lucide-react"
-import { PageHeader } from "../shared"
-import { Field, inputCls } from "../form-ui"
+import { PageHeader } from "../ui/shared"
+import { Field, inputCls } from "../ui/form-ui"
 
-const trainingPrograms = [
-  "Dressmaking NC II",
-  "Food processing basics",
-  "Electrical installation NC II",
-  "Livelihood kit — sari-sari store",
-  "No preference / open to any program",
-]
-
-function generateReference() {
+function generateReference(prefix: string) {
   const num = Math.floor(1000 + Math.random() * 9000)
-  return `LTP-2026-${num}`
+  return `${prefix}-2026-${num}`
 }
 
-export default function ApplyLivelihood() {
+export default function ApplyPWDSenior() {
   const [name, setName] = useState("")
   const [address, setAddress] = useState("")
   const [contact, setContact] = useState("")
-  const [preferredProgram, setPreferredProgram] = useState(trainingPrograms[0])
-  const [narrative, setNarrative] = useState("")
+  const [category, setCategory] = useState<"PWD" | "Senior Citizen">("PWD")
+  const [medicalCertificate, setMedicalCertificate] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [reference, setReference] = useState("")
 
-  const canSubmit = name.trim() && address.trim() && contact.trim() && narrative.trim()
+  const isPWD = category === "PWD"
+  const canSubmit = name.trim() && address.trim() && contact.trim() && (!isPWD || medicalCertificate.trim())
 
   const handleSubmit = () => {
     if (!canSubmit) return
-    setReference(generateReference())
+    setReference(generateReference(isPWD ? "PWD" : "SC"))
     setSubmitted(true)
   }
 
@@ -42,8 +35,8 @@ export default function ApplyLivelihood() {
           </div>
           <h2 className="text-lg font-heading font-semibold text-foreground">Application submitted</h2>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Thank you, {name}. Your registration for {preferredProgram.toLowerCase()} has been received and is
-            now pending review by a social worker.
+            Thank you, {name}. Your {category} registration has been received and is now pending review by a
+            social worker.
           </p>
           <div className="mt-2 bg-muted rounded-xl px-4 py-3 w-full">
             <p className="text-xs text-muted-foreground">Reference number</p>
@@ -60,8 +53,8 @@ export default function ApplyLivelihood() {
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">
       <PageHeader
-        title="Apply for Livelihood & Training"
-        desc="Fill out this form to register for skills training, TESDA-partnered certification, or a livelihood starter kit."
+        title="Apply for PWD / Senior Citizen ID"
+        desc="Fill out this form to register for a PWD or Senior Citizen ID. A social worker will review your application and contact you for the next steps."
       />
 
       <div className="bg-card border border-border rounded-2xl p-6 shadow-soft space-y-4">
@@ -80,27 +73,27 @@ export default function ApplyLivelihood() {
           <Field label="Address" full>
             <input value={address} onChange={(e) => setAddress(e.target.value)} className={`${inputCls} h-10`} placeholder="Barangay, City" />
           </Field>
-          <Field label="Preferred program" full>
-            <select value={preferredProgram} onChange={(e) => setPreferredProgram(e.target.value)} className={`${inputCls} h-10`}>
-              {trainingPrograms.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
+          <Field label="Category" full>
+            <select value={category} onChange={(e) => setCategory(e.target.value as "PWD" | "Senior Citizen")} className={`${inputCls} h-10`}>
+              <option value="PWD">PWD (Person with Disability)</option>
+              <option value="Senior Citizen">Senior Citizen</option>
             </select>
           </Field>
-          <Field label="Why do you want to join?" full>
-            <textarea
-              value={narrative}
-              onChange={(e) => setNarrative(e.target.value)}
-              rows={4}
-              className={inputCls}
-              placeholder="Briefly describe your goals or current situation..."
-            />
-          </Field>
+          {isPWD && (
+            <Field label="Medical certificate details" full>
+              <input
+                value={medicalCertificate}
+                onChange={(e) => setMedicalCertificate(e.target.value)}
+                className={`${inputCls} h-10`}
+                placeholder="Attending physician / diagnosis summary"
+              />
+            </Field>
+          )}
         </div>
 
         <p className="text-xs text-muted-foreground">
-          You will need to bring a valid ID and Barangay Certificate of Residency when you visit for skills
-          assessment.
+          You will need to bring a valid ID, 1x1 photo, Barangay Certificate of Residency
+          {isPWD && ", and your Medical Certificate"} when you visit your barangay social welfare office.
         </p>
 
         <button

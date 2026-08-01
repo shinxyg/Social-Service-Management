@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { Building2, ChevronRight, LogOut, FileText, LayoutGrid, Search } from "lucide-react"
 import { moduleRoutes } from "./routes"
-import { Tooltip } from "./tooltip"
+import { Tooltip } from "../ui/tooltip"
 
 const portalLinks = [
   { path: "/portal/aics", label: "AICS", icon: FileText },
@@ -10,6 +10,12 @@ const portalLinks = [
 ]
 
 export function AppSidebar({ open }: { open: boolean }) {
+  // Logout handler function
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    window.location.href = '/login';
+  };
+
   return (
     <aside
       className={`shrink-0 gradient-sidebar flex flex-col h-screen sticky top-0 overflow-hidden transition-all duration-300 ${
@@ -75,7 +81,6 @@ export function AppSidebar({ open }: { open: boolean }) {
                   </NavLink>
                 )
 
-                // Collapsed rail: icon-only, so a tooltip is the only way to see the label.
                 return open ? (
                   link
                 ) : (
@@ -87,7 +92,7 @@ export function AppSidebar({ open }: { open: boolean }) {
             </div>
           </div>
 
-          {/* Views — flat list of resident-facing pages, always visible, no dropdown */}
+          {/* Views */}
           <div className="mt-4 pt-4 border-t border-sidebar-foreground/10">
             {open && (
               <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
@@ -140,11 +145,12 @@ export function AppSidebar({ open }: { open: boolean }) {
           </div>
         </nav>
 
-        {/* Footer */}
+        {/* Footer with working Logout */}
         <div className="p-4 border-t border-sidebar-foreground/10">
-          <Tooltip label="Social Worker — Staff">
+          <Tooltip label="Log Out">
             <div
-              className={`flex items-center gap-2.5 rounded-xl px-2 py-2 hover:bg-sidebar-accent transition-colors cursor-pointer ${
+              onClick={handleLogout}
+              className={`flex items-center gap-2.5 rounded-xl px-2 py-2 hover:bg-red-500/10 hover:text-red-400 text-sidebar-foreground transition-colors cursor-pointer ${
                 !open && "justify-center px-0"
               }`}
             >
@@ -154,7 +160,7 @@ export function AppSidebar({ open }: { open: boolean }) {
               {open && (
                 <>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-sidebar-foreground truncate">Login</p>
+                    <p className="text-sm font-medium truncate">Log Out</p>
                   </div>
                   <LogOut className="h-4 w-4 text-sidebar-foreground/40 shrink-0" />
                 </>

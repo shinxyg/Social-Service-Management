@@ -1,6 +1,4 @@
-
-import { StatCard, ServiceCard, StatusBadge, PageHeader } from "./shared"
-
+import { StatCard, ServiceCard, StatusBadge, PageHeader } from "../ui/shared"
 const stats = [
   { label: "Disbursed this month", value: "₱2,148,600" },
   { label: "Pending release", value: "₱384,200" },

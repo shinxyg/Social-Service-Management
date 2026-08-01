@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react"
+
 export function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-card border border-border rounded-2xl p-4 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-medium">
@@ -38,25 +40,45 @@ export function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export function ServiceCard({ label, desc }: { label: string; desc: string }) {
+// Accepts either { label, desc } (older callers) or { title, description, icon } (newer callers).
+type ServiceCardProps = {
+  label?: string
+  desc?: string
+  title?: string
+  description?: string
+  icon?: LucideIcon
+}
+
+export function ServiceCard({ label, desc, title, description, icon: Icon }: ServiceCardProps) {
+  const heading = title ?? label ?? ""
+  const body = description ?? desc ?? ""
+
   return (
     <div className="bg-card border border-border rounded-2xl p-4 flex gap-3 shadow-soft transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-medium">
       <div className="h-9 w-9 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-heading font-semibold text-sm">
-        {label.charAt(0)}
+        {Icon ? <Icon className="h-4.5 w-4.5" /> : heading.charAt(0)}
       </div>
       <div>
-        <p className="text-sm font-medium text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+        <p className="text-sm font-medium text-foreground">{heading}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{body}</p>
       </div>
     </div>
   )
 }
 
-export function PageHeader({ title, desc }: { title: string; desc: string }) {
+// Accepts either "desc" or "subtitle" — different modules use different naming.
+type PageHeaderProps = {
+  title: string
+  desc?: string
+  subtitle?: string
+}
+
+export function PageHeader({ title, desc, subtitle }: PageHeaderProps) {
+  const body = desc ?? subtitle ?? ""
   return (
     <div>
       <h1 className="text-2xl font-heading font-semibold text-foreground">{title}</h1>
-      <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{desc}</p>
+      {body && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{body}</p>}
     </div>
   )
 }

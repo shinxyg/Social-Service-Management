@@ -1,10 +1,10 @@
 
 import { ShieldAlert, Users, Baby, GraduationCap, Wallet, type LucideIcon } from "lucide-react"
-import AICS from "./aics"
-import PWDSeniorCitizen from "./pwd-senior-citizen"
-import SoloParentChildWelfare from "./solo-parent-child-welfare"
-import LivelihoodTraining from "./livelihood-training"
-import FinancialAidDisbursement from "./financial-aid-disbursement"
+import AICS from "../modules/aics"
+import PWDSeniorCitizen from "../modules/pwd-senior-citizen"
+import SoloParentChildWelfare from "../modules/solo-parent-child-welfare"
+import LivelihoodTraining from "../modules/livelihood-training"
+import FinancialAidDisbursement from "../modules/financial-aid-disbursement"
 
 export type ModuleRoute = {
   path: string

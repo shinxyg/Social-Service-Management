@@ -9,7 +9,7 @@ import {
   ThumbsUp,
   IdCard,
 } from "lucide-react"
-import { Field, RadioPill, CheckboxRow, inputCls } from "./form-ui"
+import { Field, RadioPill, CheckboxRow, inputCls } from "../ui/form-ui"
 import { WizardStepper, type WizardStep } from "./wizard-stepper"
 
 const documentRequirements = [

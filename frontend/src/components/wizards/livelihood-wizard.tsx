@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Award,
 } from "lucide-react"
-import { Field, RadioPill, CheckboxRow, inputCls } from "./form-ui"
+import { Field, RadioPill, CheckboxRow, inputCls } from "../ui/form-ui"
 import { WizardStepper, type WizardStep } from "./wizard-stepper"
 
 const documentRequirements = [
@@ -27,9 +27,6 @@ const trainingPrograms = [
 
 const partners = ["TESDA", "City LGU"]
 
-// Admin/staff process flow only. Intake happens on the resident-facing
-// portal (user-portal/apply-livelihood.tsx) — staff always start here
-// from an already-submitted registration, at Registration verification.
 const steps: WizardStep[] = [
   { label: "Registration", icon: ClipboardList },
   { label: "Skills Assessment", icon: UserCheck },
@@ -44,8 +41,6 @@ export type LivelihoodApplicationResult = {
   status: string
 }
 
-// Info submitted by the resident online (apply-livelihood.tsx). Required —
-// the admin wizard only ever processes an existing submission.
 export type LivelihoodApplicantInfo = {
   name: string
   address: string
@@ -73,25 +68,20 @@ export function LivelihoodApplicationWizard({
 
   const { name, address, contact, preferredProgram, narrative } = applicant
 
-  // Step 1 — Registration
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({})
 
-  // Step 2 — Skills Assessment
   const [skillLevel, setSkillLevel] = useState<"Beginner" | "Intermediate" | "Advanced">("Beginner")
   const [recommendedProgram, setRecommendedProgram] = useState(preferredProgram || trainingPrograms[0])
   const [assessmentNotes, setAssessmentNotes] = useState("")
   const [eligibility, setEligibility] = useState<"Eligible" | "Not eligible">("Eligible")
 
-  // Step 3 — Training Assignment
   const [partner, setPartner] = useState(partners[0])
   const [startDate, setStartDate] = useState("")
 
-  // Step 4 — Completion
   const [completionStatus, setCompletionStatus] = useState<"Completed" | "Incomplete">("Completed")
   const [completionDate, setCompletionDate] = useState("")
   const [completionRemarks, setCompletionRemarks] = useState("")
 
-  // Step 5 — Certification
   const [certType, setCertType] = useState("NC II Certificate")
   const [certNumber, setCertNumber] = useState(generateCertNumber)
   const [certDate, setCertDate] = useState("")
@@ -156,7 +146,6 @@ export function LivelihoodApplicationWizard({
     <div className="space-y-6">
       <WizardStepper steps={steps} step={step} />
 
-      {/* Applicant summary — read-only, submitted online by the resident */}
       <div className="bg-muted/50 border border-border rounded-2xl p-4 text-sm">
         <p className="text-xs font-medium text-muted-foreground mb-1">Applicant (submitted online)</p>
         <p className="text-foreground font-medium">{name} — {preferredProgram || "No preference stated"}</p>
@@ -175,7 +164,7 @@ export function LivelihoodApplicationWizard({
                   key={r}
                   label={r}
                   checked={!!checkedDocs[r]}
-                  onChange={(checked) => setCheckedDocs((c) => ({ ...c, [r]: checked }))}
+                  onChange={(checked: boolean) => setCheckedDocs((c) => ({ ...c, [r]: checked }))}
                 />
               ))}
             </div>

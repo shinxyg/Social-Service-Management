@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import { AppSidebar } from "./app-sidebar"
 import { AppHeader } from "./app-header"
-import { AIChatWidget } from "./ai-chat-widget"
+import { AIChatWidget } from "../ui/ai-chat-widget"
 
 export default function SocialServicesLayout() {
   const location = useLocation()

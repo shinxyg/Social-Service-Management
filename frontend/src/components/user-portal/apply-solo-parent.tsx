@@ -1,28 +1,27 @@
 import { useState } from "react"
 import { Check, ClipboardList } from "lucide-react"
-import { PageHeader } from "../shared"
-import { Field, inputCls } from "../form-ui"
+import { PageHeader } from "../ui/shared"
+import { Field, inputCls } from "../ui/form-ui"
 
-function generateReference(prefix: string) {
+function generateReference() {
   const num = Math.floor(1000 + Math.random() * 9000)
-  return `${prefix}-2026-${num}`
+  return `SP-2026-${num}`
 }
 
-export default function ApplyPWDSenior() {
+export default function ApplySoloParent() {
   const [name, setName] = useState("")
   const [address, setAddress] = useState("")
   const [contact, setContact] = useState("")
-  const [category, setCategory] = useState<"PWD" | "Senior Citizen">("PWD")
-  const [medicalCertificate, setMedicalCertificate] = useState("")
+  const [dependents, setDependents] = useState("")
+  const [proofOfStatus, setProofOfStatus] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [reference, setReference] = useState("")
 
-  const isPWD = category === "PWD"
-  const canSubmit = name.trim() && address.trim() && contact.trim() && (!isPWD || medicalCertificate.trim())
+  const canSubmit = name.trim() && address.trim() && contact.trim() && dependents.trim() && proofOfStatus.trim()
 
   const handleSubmit = () => {
     if (!canSubmit) return
-    setReference(generateReference(isPWD ? "PWD" : "SC"))
+    setReference(generateReference())
     setSubmitted(true)
   }
 
@@ -35,7 +34,7 @@ export default function ApplyPWDSenior() {
           </div>
           <h2 className="text-lg font-heading font-semibold text-foreground">Application submitted</h2>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Thank you, {name}. Your {category} registration has been received and is now pending review by a
+            Thank you, {name}. Your Solo Parent ID application has been received and is now pending review by a
             social worker.
           </p>
           <div className="mt-2 bg-muted rounded-xl px-4 py-3 w-full">
@@ -53,8 +52,8 @@ export default function ApplyPWDSenior() {
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">
       <PageHeader
-        title="Apply for PWD / Senior Citizen ID"
-        desc="Fill out this form to register for a PWD or Senior Citizen ID. A social worker will review your application and contact you for the next steps."
+        title="Apply for Solo Parent ID"
+        desc="Fill out this form to register under the Solo Parents Welfare Act. A social worker will review your application and contact you for the next steps."
       />
 
       <div className="bg-card border border-border rounded-2xl p-6 shadow-soft space-y-4">
@@ -73,27 +72,29 @@ export default function ApplyPWDSenior() {
           <Field label="Address" full>
             <input value={address} onChange={(e) => setAddress(e.target.value)} className={`${inputCls} h-10`} placeholder="Barangay, City" />
           </Field>
-          <Field label="Category" full>
-            <select value={category} onChange={(e) => setCategory(e.target.value as "PWD" | "Senior Citizen")} className={`${inputCls} h-10`}>
-              <option value="PWD">PWD (Person with Disability)</option>
-              <option value="Senior Citizen">Senior Citizen</option>
-            </select>
+          <Field label="Dependents" full>
+            <input
+              value={dependents}
+              onChange={(e) => setDependents(e.target.value)}
+              className={`${inputCls} h-10`}
+              placeholder="e.g. 2 children, ages 5 and 9"
+            />
           </Field>
-          {isPWD && (
-            <Field label="Medical certificate details" full>
-              <input
-                value={medicalCertificate}
-                onChange={(e) => setMedicalCertificate(e.target.value)}
-                className={`${inputCls} h-10`}
-                placeholder="Attending physician / diagnosis summary"
-              />
-            </Field>
-          )}
+          <Field label="Proof of status" full>
+            <textarea
+              value={proofOfStatus}
+              onChange={(e) => setProofOfStatus(e.target.value)}
+              rows={3}
+              className={inputCls}
+              placeholder="Briefly describe your basis for solo parent status (e.g. widowed, separated, OFW spouse)..."
+            />
+          </Field>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          You will need to bring a valid ID, 1x1 photo, Barangay Certificate of Residency
-          {isPWD && ", and your Medical Certificate"} when you visit your barangay social welfare office.
+          You will need to bring a valid ID, proof of status (Barangay Certificate / death certificate / court
+          order), and birth certificate(s) of your child/children when you visit your barangay social welfare
+          office.
         </p>
 
         <button

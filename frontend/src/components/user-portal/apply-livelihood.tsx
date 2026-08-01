@@ -1,26 +1,26 @@
 import { useState } from "react"
 import { Check, ClipboardList } from "lucide-react"
-import { PageHeader } from "../shared"
-import { Field, inputCls } from "../form-ui"
+import { PageHeader } from "../ui/shared"
+import { Field, inputCls } from "../ui/form-ui"
 
-const fundingSources = [
-  "AICS",
-  "Social pension",
-  "Educational assistance",
-  "Livelihood kit funding",
+const trainingPrograms = [
+  "Dressmaking NC II",
+  "Food processing basics",
+  "Electrical installation NC II",
+  "Livelihood kit — sari-sari store",
+  "No preference / open to any program",
 ]
 
 function generateReference() {
   const num = Math.floor(1000 + Math.random() * 9000)
-  return `FAD-2026-${num}`
+  return `LTP-2026-${num}`
 }
 
-export default function ApplyFinancialAid() {
+export default function ApplyLivelihood() {
   const [name, setName] = useState("")
   const [address, setAddress] = useState("")
   const [contact, setContact] = useState("")
-  const [source, setSource] = useState(fundingSources[0])
-  const [amountRequested, setAmountRequested] = useState("")
+  const [preferredProgram, setPreferredProgram] = useState(trainingPrograms[0])
   const [narrative, setNarrative] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [reference, setReference] = useState("")
@@ -40,17 +40,17 @@ export default function ApplyFinancialAid() {
           <div className="h-14 w-14 rounded-2xl bg-success/10 flex items-center justify-center">
             <Check className="h-7 w-7 text-success" />
           </div>
-          <h2 className="text-lg font-heading font-semibold text-foreground">Request submitted</h2>
+          <h2 className="text-lg font-heading font-semibold text-foreground">Application submitted</h2>
           <p className="text-sm text-muted-foreground max-w-sm">
-            Thank you, {name}. Your financial aid request under {source} has been received and is now pending
-            review.
+            Thank you, {name}. Your registration for {preferredProgram.toLowerCase()} has been received and is
+            now pending review by a social worker.
           </p>
           <div className="mt-2 bg-muted rounded-xl px-4 py-3 w-full">
             <p className="text-xs text-muted-foreground">Reference number</p>
             <p className="text-sm font-semibold text-foreground">{reference}</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Save this reference number to track your request status.
+            Save this reference number to track your application status.
           </p>
         </div>
       </div>
@@ -60,14 +60,14 @@ export default function ApplyFinancialAid() {
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">
       <PageHeader
-        title="Request financial aid"
-        desc="Fill out this form to request assistance from the office's cash aid programs. A social worker will review your request and contact you for the next steps."
+        title="Apply for Livelihood & Training"
+        desc="Fill out this form to register for skills training, TESDA-partnered certification, or a livelihood starter kit."
       />
 
       <div className="bg-card border border-border rounded-2xl p-6 shadow-soft space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <ClipboardList className="h-4 w-4 text-primary" />
-          Requester information
+          Applicant information
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -80,36 +80,27 @@ export default function ApplyFinancialAid() {
           <Field label="Address" full>
             <input value={address} onChange={(e) => setAddress(e.target.value)} className={`${inputCls} h-10`} placeholder="Barangay, City" />
           </Field>
-          <Field label="Program source">
-            <select value={source} onChange={(e) => setSource(e.target.value)} className={`${inputCls} h-10`}>
-              {fundingSources.map((s) => (
-                <option key={s} value={s}>{s}</option>
+          <Field label="Preferred program" full>
+            <select value={preferredProgram} onChange={(e) => setPreferredProgram(e.target.value)} className={`${inputCls} h-10`}>
+              {trainingPrograms.map((p) => (
+                <option key={p} value={p}>{p}</option>
               ))}
             </select>
           </Field>
-          <Field label="Amount requested (₱)">
-            <input
-              type="number"
-              value={amountRequested}
-              onChange={(e) => setAmountRequested(e.target.value)}
-              className={`${inputCls} h-10`}
-              placeholder="0.00"
-            />
-          </Field>
-          <Field label="Reason for request" full>
+          <Field label="Why do you want to join?" full>
             <textarea
               value={narrative}
               onChange={(e) => setNarrative(e.target.value)}
               rows={4}
               className={inputCls}
-              placeholder="Briefly describe your situation and why you need this assistance..."
+              placeholder="Briefly describe your goals or current situation..."
             />
           </Field>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          You will need to bring a valid ID and Barangay Certificate of Indigency, plus requirements specific
-          to the program source, when you visit for verification.
+          You will need to bring a valid ID and Barangay Certificate of Residency when you visit for skills
+          assessment.
         </p>
 
         <button
@@ -117,7 +108,7 @@ export default function ApplyFinancialAid() {
           disabled={!canSubmit}
           className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
         >
-          Submit request
+          Submit application
         </button>
       </div>
     </div>

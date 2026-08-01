@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ServiceCard, PageHeader } from "../shared"
+import { ServiceCard, PageHeader } from "../ui/shared"
 import { ClipboardList, FileCheck2, MessageCircle, UserCheck, ThumbsUp, Wallet, Search } from "lucide-react"
 import ApplyAICS from "./apply-aics"
 

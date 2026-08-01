@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { StatCard, ServiceCard, StatusBadge, PageHeader } from "./shared"
-import { PWDSeniorApplicationWizard, type PWDSeniorApplicationResult, type PWDSeniorApplicantInfo } from "./pwd-senior-wizard"
+import { StatCard, ServiceCard, StatusBadge, PageHeader } from "../ui/shared"
+import { PWDSeniorApplicationWizard, type PWDSeniorApplicationResult, type PWDSeniorApplicantInfo } from "../wizards/pwd-senior-wizard"
 import { FileText, ClipboardCheck } from "lucide-react"
 
 const stats = [

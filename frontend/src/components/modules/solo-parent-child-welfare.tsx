@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { StatCard, ServiceCard, StatusBadge, PageHeader } from "./shared"
-import { SoloParentApplicationWizard, type SoloParentApplicationResult, type SoloParentApplicantInfo } from "./solo-parent-wizard"
+import { StatCard, ServiceCard, StatusBadge, PageHeader } from "../ui/shared"
+import { SoloParentApplicationWizard, type SoloParentApplicationResult, type SoloParentApplicantInfo } from "../wizards/solo-parent-wizard"
 import { FileText, ClipboardCheck } from "lucide-react"
 
 const stats = [

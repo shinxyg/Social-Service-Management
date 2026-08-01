@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
-import { StatCard, ServiceCard, StatusBadge, PageHeader } from "./shared"
-import { AICSApplicationWizard, type AICSApplicationResult, type AICSApplicantInfo } from "./application-wizard"
-import { Tabs } from "./tabs"
+import { StatCard, ServiceCard, StatusBadge, PageHeader } from "../ui/shared"
+import { AICSApplicationWizard, type AICSApplicationResult, type AICSApplicantInfo } from "../wizards/application-wizard"
+import { Tabs } from "../ui/tabs"
 import { FileText, ClipboardCheck } from "lucide-react"
 
 const stats = [
@@ -26,10 +26,6 @@ const initialApplications = [
   { name: "Aiza R. Fernandez", type: "Medical assistance", filed: "Jul 24, 2026", amount: "₱15,000", status: "For interview" },
 ]
 
-// Mock submissions that residents filed themselves through the online portal
-// (frontend/src/components/user-portal/apply-aics.tsx). Staff pick one here
-// to begin verification — this is UI-only for now; wiring to a shared/live
-// data source (backend or shared state) is a follow-up step.
 const pendingSubmissions: AICSApplicantInfo[] = [
   {
     name: "Liza P. Gonzales",
@@ -84,7 +80,7 @@ export default function AICS() {
       <div className="p-4 md:p-6 space-y-6">
         <PageHeader
           title="Pending applications from residents"
-          desc="These were submitted directly by residents through the online portal. Select one to begin verification and processing."
+          subtitle="These were submitted directly by residents through the online portal. Select one to begin verification and processing."
         />
         <div className="space-y-3 max-w-2xl">
           {pendingSubmissions.map((s, i) => (
@@ -125,7 +121,7 @@ export default function AICS() {
       <div className="p-4 md:p-6 space-y-6">
         <PageHeader
           title="Process AICS application"
-          desc="Verification, interview, assessment, approval and release steps for a resident-submitted crisis assistance request."
+          subtitle="Verification, interview, assessment, approval and release steps for a resident-submitted crisis assistance request."
         />
         <AICSApplicationWizard
           onCancel={() => {
@@ -144,7 +140,7 @@ export default function AICS() {
       <div className="flex items-start justify-between gap-4">
         <PageHeader
           title="AICS — Assistance to Individuals in Crisis"
-          desc="Case intake and disbursement for residents facing medical, burial, educational or transportation emergencies."
+          subtitle="Case intake and disbursement for residents facing medical, burial, educational or transportation emergencies."
         />
         <button
           onClick={() => setView("picker")}

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { PageHeader } from "../shared"
+import { PageHeader } from "../ui/shared"
 import { Users, Baby, GraduationCap, ClipboardList } from "lucide-react"
 
 const programs = [

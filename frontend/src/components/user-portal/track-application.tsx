@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Search } from "lucide-react"
-import { PageHeader, StatusBadge } from "../shared"
+import { PageHeader, StatusBadge } from "../ui/shared"
 
 // Mock lookup table — in production this queries the backend by reference number.
 const mockRecords: Record<string, { name: string; type: string; status: string; updated: string; note: string }> = {

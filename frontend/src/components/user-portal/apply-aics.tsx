@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Check, ClipboardList } from "lucide-react"
-import { PageHeader } from "../shared"
+import { PageHeader } from "../ui/shared"
 
 const assistanceTypes = [
   "Medical assistance",
