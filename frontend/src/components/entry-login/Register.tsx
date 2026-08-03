@@ -57,9 +57,12 @@ export const Register = () => {
       return;
     }
 
-    // Handle successful registration logic here
+    // Public self-registration is for residents only. Staff accounts are
+    // provisioned separately and sign in through the Staff / Social Worker
+    // option on the Login page.
     localStorage.setItem('isAuthenticated', 'true');
-    window.location.href = '/portal';
+    localStorage.setItem('userRole', 'user');
+    window.location.href = '/portal/aics';
   };
 
   return (
@@ -148,7 +151,7 @@ export const Register = () => {
               Create Account
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Register a new account to access the Social Services portal
+              Register a new resident account to access the Social Services portal
             </p>
           </div>
 

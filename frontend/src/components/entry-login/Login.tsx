@@ -42,6 +42,9 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [selectedModule, setSelectedModule] = useState<ModuleInfo | null>(null);
 
+  // Role selector: which portal the person is signing in to
+  const [role, setRole] = useState<'user' | 'staff'>('user');
+
   // States para sa Password Reset Modal na may Current Password
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -56,7 +59,8 @@ export const Login = () => {
 
     if (email && password) {
       localStorage.setItem('isAuthenticated', 'true');
-      window.location.href = '/portal';
+      localStorage.setItem('userRole', role);
+      window.location.href = role === 'staff' ? '/aics' : '/portal/aics';
     } else {
       setError('Please enter your email and password.');
     }
@@ -169,6 +173,38 @@ export const Login = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4 text-left">
+
+            {/* Role toggle: Resident / User vs Staff / Social Worker */}
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase tracking-wider text-left">
+                Sign in as
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRole('user')}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                    role === 'user'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-slate-50 text-slate-500 border-slate-200'
+                  }`}
+                >
+                  Resident / User
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('staff')}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                    role === 'staff'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-slate-50 text-slate-500 border-slate-200'
+                  }`}
+                >
+                  Staff / Social Worker
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase tracking-wider text-left">
                 Email Address

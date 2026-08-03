@@ -1,28 +1,48 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { ServiceCard, PageHeader } from "../ui/shared"
-import { ClipboardList, FileCheck2, MessageCircle, UserCheck, ThumbsUp, Wallet, Search } from "lucide-react"
+import {
+  HeartPulse,
+  Flame,
+  Truck,
+  Package,
+  Utensils,
+  Banknote,
+  ChevronRight,
+  ClipboardList,
+} from "lucide-react"
 import ApplyAICS from "./apply-aics"
+import { useLanguage } from "../ui/language-context"
 
-const assistanceTypes = [
-  { label: "Medical assistance", desc: "Hospital bills, medicines, laboratory and confinement expenses" },
-  { label: "Burial assistance", desc: "Funeral and burial cost support for indigent families" },
-  { label: "Educational assistance", desc: "School supplies, tuition and allowance for students in crisis" },
-  { label: "Transportation assistance", desc: "Fare and travel support for medical referrals or emergencies" },
-]
+/*
+  This is the actual "AICS" page a resident sees after clicking AICS in
+  the sidebar (user-layout.tsx). Ported from the standalone AICS
+  dashboard mockup — same 6 assistance types, same circular icon tiles,
+  same "AICS ASSISTANCE" heading — but built with the project's real
+  Tailwind tokens (bg-card, text-primary, shadow-soft, etc.) instead of
+  the mockup's inline hex/hsl styles, and wired so each card opens the
+  real apply form with that assistance type pre-selected.
+*/
 
-const processSteps = [
-  { label: "Application", icon: ClipboardList, desc: "You submit your request online with your basic info and situation." },
-  { label: "Verification", icon: FileCheck2, desc: "A social worker checks your submitted requirements." },
-  { label: "Interview", icon: MessageCircle, desc: "A short interview to understand your situation better." },
-  { label: "Assessment", icon: UserCheck, desc: "The social worker evaluates your eligibility and recommended amount." },
-  { label: "Approval", icon: ThumbsUp, desc: "Your application is approved or disapproved by the office." },
-  { label: "Release", icon: Wallet, desc: "If approved, your assistance is released to you." },
-]
+// TODO: the staff-side wizard (wizards/application-wizard.tsx) only has
+// document requirements defined for Medical / Burial / Educational /
+// Transportation assistance. If Material, Food and Cash Relief are meant
+// to be real AICS categories going forward, that requirementsByType map
+// needs matching entries too — flagging so admin-side stays in sync.
 
 export default function AICSUser() {
+  const { t } = useLanguage()
   const [view, setView] = useState<"info" | "apply">("info")
-  const navigate = useNavigate()
+
+  const ASSIST_ITEMS = [
+    { label: t("aicsMedical"), formType: "Medical assistance", icon: HeartPulse },
+    { label: t("aicsFuneral"), formType: "Funeral assistance", icon: Flame },
+    { label: t("aicsTransportation"), formType: "Transportation assistance", icon: Truck },
+    { label: t("aicsMaterial"), formType: "Material assistance", icon: Package },
+    { label: t("aicsFood"), formType: "Food assistance", icon: Utensils },
+    { label: t("aicsCashRelief"), formType: "Cash relief assistance", icon: Banknote },
+  ]
+
+  const [selectedType, setSelectedType] = useState<string>(ASSIST_ITEMS[0].formType)
+  const residentName = "Juan" // placeholder until auth/profile data is wired in
 
   if (view === "apply") {
     return (
@@ -31,71 +51,50 @@ export default function AICSUser() {
           onClick={() => setView("info")}
           className="mb-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← Back to AICS
+          {t("back")}
         </button>
-        <ApplyAICS />
+        {/* TODO: remove this cast once apply-aics.tsx is updated to accept
+            an `initialType` prop — right now the old ApplyAICS() takes no
+            props, so TS flags this. The prop is still passed through at
+            runtime (harmless extra prop) so nothing breaks in the meantime. */}
+        <ApplyAICS {...({ initialType: selectedType } as Record<string, unknown>)} />
       </div>
     )
   }
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <PageHeader
-          title="AICS — Assistance to Individuals in Crisis"
-          desc="Financial assistance for residents facing medical, burial, educational or transportation emergencies. Apply online and a social worker will process your request."
-        />
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => navigate("/portal/track")}
-            className="h-10 px-4 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors flex items-center gap-1.5"
-          >
-            <Search className="h-4 w-4" />
-            Track application
-          </button>
-          <button
-            onClick={() => setView("apply")}
-            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1.5"
-          >
-            <ClipboardList className="h-4 w-4" />
-            Apply now
-          </button>
-        </div>
-      </div>
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <p className="text-xs text-muted-foreground mb-1">
+        {t("aicsWelcome", { name: residentName })}
+      </p>
 
-      <div>
-        <h2 className="text-sm font-semibold text-foreground mb-3">Assistance types covered</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {assistanceTypes.map((a) => <ServiceCard key={a.label} {...a} />)}
-        </div>
-      </div>
+      <h1 className="font-heading text-3xl font-extrabold tracking-tight text-primary mb-6">
+        {t("aicsAssistance")}
+      </h1>
 
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-soft">
-        <h2 className="text-sm font-semibold text-foreground mb-4">How it works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {processSteps.map((s, i) => {
-            const Icon = s.icon
-            return (
-              <div key={s.label} className="flex gap-3">
-                <div className="h-9 w-9 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-                  {i + 1}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                    {s.label}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
-                </div>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 list-none p-0 m-0">
+        {ASSIST_ITEMS.map(({ label, formType, icon: Icon }) => (
+          <li key={formType}>
+            <button
+              onClick={() => {
+                setSelectedType(formType)
+                setView("apply")
+              }}
+              className="w-full flex items-center gap-3.5 bg-card border border-border rounded-2xl px-4 py-3 shadow-soft transition-all duration-150 hover:-translate-y-0.5 hover:shadow-medium hover:border-primary/35 text-left"
+            >
+              <div className="h-11 w-11 shrink-0 rounded-full bg-linear-to-br from-primary to-primary/70 shadow-lg shadow-primary/30 flex items-center justify-center">
+                <Icon className="h-5.5 w-5.5 text-white" strokeWidth={2} />
               </div>
-            )
-          })}
-        </div>
-      </div>
+              <span className="text-sm font-semibold text-foreground flex-1">{label}</span>
+              <ChevronRight className="h-4.5 w-4.5 text-muted-foreground shrink-0" />
+            </button>
+          </li>
+        ))}
+      </ul>
 
-      <div className="bg-muted/50 border border-border rounded-2xl p-5 text-sm text-muted-foreground">
-        Bring a valid government-issued ID and Barangay Certificate of Indigency, plus the specific requirements
-        for your assistance type, when a social worker asks you to visit for verification.
+      <div className="mt-6 bg-muted/50 border border-border rounded-2xl p-5 text-sm text-muted-foreground flex items-start gap-2.5">
+        <ClipboardList className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground" />
+        {t("aicsFooterNote")}
       </div>
     </div>
   )
