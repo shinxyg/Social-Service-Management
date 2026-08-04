@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { Building2, ChevronRight, LogOut, FileText, LayoutGrid, Search } from "lucide-react"
+import { Building2, ChevronRight, FileText, LayoutGrid, Search } from "lucide-react"
 import { moduleRoutes } from "./routes"
 import { Tooltip } from "../ui/tooltip"
 
@@ -10,12 +10,6 @@ const portalLinks = [
 ]
 
 export function AppSidebar({ open }: { open: boolean }) {
-  // Logout handler function
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    window.location.href = '/login';
-  };
-
   return (
     <aside
       className={`shrink-0 gradient-sidebar flex flex-col h-screen sticky top-0 overflow-hidden transition-all duration-300 ${
@@ -144,30 +138,6 @@ export function AppSidebar({ open }: { open: boolean }) {
             </div>
           </div>
         </nav>
-
-        {/* Footer with working Logout */}
-        <div className="p-4 border-t border-sidebar-foreground/10">
-          <Tooltip label="Log Out">
-            <div
-              onClick={handleLogout}
-              className={`flex items-center gap-2.5 rounded-xl px-2 py-2 hover:bg-red-500/10 hover:text-red-400 text-sidebar-foreground transition-colors cursor-pointer ${
-                !open && "justify-center px-0"
-              }`}
-            >
-              <div className="h-9 w-9 rounded-xl bg-linear-to-br from-sidebar-primary to-primary flex items-center justify-center text-xs font-semibold text-white shrink-0">
-                SW
-              </div>
-              {open && (
-                <>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">Log Out</p>
-                  </div>
-                  <LogOut className="h-4 w-4 text-sidebar-foreground/40 shrink-0" />
-                </>
-              )}
-            </div>
-          </Tooltip>
-        </div>
       </div>
     </aside>
   )

@@ -39,12 +39,6 @@ function Avatar({ size = 36 }: { size?: number }) {
 }
 
 function ResidentSidebar({ open }: { open: boolean }) {
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated")
-    localStorage.removeItem("userRole")
-    window.location.href = "/login"
-  }
-
   return (
     <aside
       className={`shrink-0 gradient-sidebar flex flex-col h-screen sticky top-0 overflow-hidden transition-all duration-300 ${
@@ -114,27 +108,6 @@ function ResidentSidebar({ open }: { open: boolean }) {
             </div>
           </div>
         </nav>
-
-        <div className="p-4 border-t border-sidebar-foreground/10">
-          <Tooltip label="Log Out">
-            <div
-              onClick={handleLogout}
-              className={`flex items-center gap-2.5 rounded-xl px-2 py-2 hover:bg-red-500/10 hover:text-red-400 text-sidebar-foreground transition-colors cursor-pointer ${
-                !open && "justify-center px-0"
-              }`}
-            >
-              <Avatar />
-              {open && (
-                <>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">Log Out</p>
-                  </div>
-                  <LogOut className="h-4 w-4 text-sidebar-foreground/40 shrink-0" />
-                </>
-              )}
-            </div>
-          </Tooltip>
-        </div>
       </div>
     </aside>
   )
@@ -155,6 +128,12 @@ function ResidentHeader({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [now, setNow] = useState(new Date())
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated")
+    localStorage.removeItem("userRole")
+    window.location.href = "/login"
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -260,6 +239,14 @@ function ResidentHeader({
                 className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
               >
                 Settings
+              </button>
+              <div className="my-1 border-t border-border" />
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                Log Out
               </button>
             </div>
           )}

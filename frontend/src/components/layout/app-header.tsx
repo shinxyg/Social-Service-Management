@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { HelpCircle, Bell, Menu, User, Settings, Sun, Moon, ShieldAlert, Users, Baby, GraduationCap, Wallet, LifeBuoy } from "lucide-react"
+import { HelpCircle, Bell, Menu, User, Settings, Sun, Moon, ShieldAlert, Users, Baby, GraduationCap, Wallet, LifeBuoy, LogOut } from "lucide-react"
 import { moduleRoutes } from "./routes"
 import { Tooltip } from "../ui/tooltip"
 import { SettingsModal } from "../ui/settings-modal"
@@ -26,6 +26,12 @@ export function AppHeader({
   const menuRef = useRef<HTMLDivElement>(null)
   const notifRef = useRef<HTMLDivElement>(null)
   const helpRef = useRef<HTMLDivElement>(null)
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    window.location.href = '/login';
+  };
 
   const mockNotifications = [
     {
@@ -229,7 +235,7 @@ export function AppHeader({
           )}
         </div>
 
-        {/* User menu with dropdown (Sign out removed) */}
+        {/* User menu with dropdown (Log Out included) */}
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setMenuOpen((v) => !v)}
@@ -259,6 +265,14 @@ export function AppHeader({
               >
                 <Settings className="h-4 w-4 text-muted-foreground" />
                 {t("settings")}
+              </button>
+              <div className="my-1 border-t border-border" />
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                {t("logOut")}
               </button>
             </div>
           )}

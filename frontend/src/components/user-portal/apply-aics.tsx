@@ -8,7 +8,14 @@ function generateReference() {
   return `AICS-2026-${num}`
 }
 
-export default function ApplyAICS() {
+interface ApplyAICSProps {
+  // When provided (e.g. resident clicked a specific assistance card like
+  // "Medical Assistance"), the type is locked/fixed and shown as read-only
+  // instead of a dropdown the user can change.
+  initialType?: string
+}
+
+export default function ApplyAICS({ initialType }: ApplyAICSProps) {
   const { t } = useLanguage()
 
   const assistanceTypes = [
@@ -21,7 +28,7 @@ export default function ApplyAICS() {
   const [name, setName] = useState("")
   const [address, setAddress] = useState("")
   const [contact, setContact] = useState("")
-  const [type, setType] = useState(assistanceTypes[0])
+  const [type, setType] = useState(initialType || assistanceTypes[0])
   const [narrative, setNarrative] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [reference, setReference] = useState("")
@@ -29,6 +36,8 @@ export default function ApplyAICS() {
   // Supporting document (optional image attachment)
   const [attachment, setAttachment] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  const isTypeLocked = Boolean(initialType)
 
   useEffect(() => {
     return () => {
@@ -106,11 +115,17 @@ export default function ApplyAICS() {
             <input value={address} onChange={(e) => setAddress(e.target.value)} className={`${inputCls} h-10`} placeholder="Barangay, City" />
           </Field>
           <Field label={t("typeOfAssistance")} full>
-            <select value={type} onChange={(e) => setType(e.target.value)} className={`${inputCls} h-10`}>
-              {assistanceTypes.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
+            {isTypeLocked ? (
+              <div className={`${inputCls} h-10 flex items-center font-medium text-foreground bg-primary/5 border border-primary/20 cursor-not-allowed`}>
+                {type}
+              </div>
+            ) : (
+              <select value={type} onChange={(e) => setType(e.target.value)} className={`${inputCls} h-10`}>
+                {assistanceTypes.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            )}
           </Field>
           <Field label={t("situationReason")} full>
             <textarea
